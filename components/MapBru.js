@@ -12,9 +12,9 @@ const Legend = () => {
       <div className="col-md-12">
         <strong>Circonference (cm): </strong> 
         <span style={{"marginRight": "10px"}}><Circle bgColor="yellow"/> {"< 200"}</span>
-        <span style={{"marginRight": "10px"}}><Circle bgColor="green" /> {"200 - 400"}</span>
-        <span style={{"marginRight": "10px"}}><Circle bgColor="orange" /> {"400 - 600"}</span>
-        <span style={{"marginRight": "10px"}}><Circle bgColor="red" /> {"> 600"}</span>
+        <span style={{"marginRight": "10px"}}><Circle bgColor="green" /> {"200 - 300"}</span>
+        <span style={{"marginRight": "10px"}}><Circle bgColor="orange" /> {"300 - 400"}</span>
+        <span style={{"marginRight": "10px"}}><Circle bgColor="red" /> {"> 400"}</span>
       </div>
     </div>
   )
@@ -113,9 +113,9 @@ class MapBru extends Component {
       style: function(feature) {
         const circonf = feature.get('CIRCONFERENCE');
         let treeColor = "yellow";
-        if (circonf > 600){
+        if (circonf > 400){
           treeColor = "red";
-        } else if (circonf > 400){
+        } else if (circonf > 300){
           treeColor = "orange";
         } else if (circonf > 200){
           treeColor = "green";
