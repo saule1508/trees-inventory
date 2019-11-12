@@ -15,7 +15,7 @@ class MapFilter extends Component {
   render() {
     const { taxa } = this.props;
     const { filter } = this.state;
-    const options = [(<option>All</option>)];
+    const options = [(<option key="All">All</option>)];
     taxa.forEach(e => {
       if (e === filter) {
         options.push(<option key={e} selected >{e}</option>);
