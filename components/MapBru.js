@@ -15,6 +15,7 @@ const Legend = () => {
         <span style={{"marginRight": "10px"}}><Circle bgColor="green" /> {"200 - 300"}</span>
         <span style={{"marginRight": "10px"}}><Circle bgColor="orange" /> {"300 - 400"}</span>
         <span style={{"marginRight": "10px"}}><Circle bgColor="red" /> {"> 400"}</span>
+        <span style={{"marginLeft": "10px"}}><small>(Map source: urbisonline.brussels, data: Brussels Planning and Heritage)</small></span>
       </div>
     </div>
   )

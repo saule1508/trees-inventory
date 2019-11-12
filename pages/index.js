@@ -2,6 +2,7 @@ import Layout from '../components/MyLayout';
 import Map from '../components/Map';
 import PropTypes from 'prop-types'
 import { server } from '../config/config.js'
+import { withTranslation } from '../i18n'
 
 const Index = props => (
   <Layout>
@@ -48,4 +49,4 @@ Index.propTypes = {
   taxa: PropTypes.array.isRequired
 }
 
-export default Index;
+export default withTranslation('common')(Index)
