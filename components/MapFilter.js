@@ -15,7 +15,7 @@ class MapFilter extends Component {
   render() {
     const { taxa } = this.props;
     const { filter } = this.state;
-    const options = [(<option>All</option>)];
+    const options = [(<option key="All">All</option>)];
     taxa.forEach(e => {
       if (e === filter) {
         options.push(<option key={e} selected >{e}</option>);
@@ -26,8 +26,8 @@ class MapFilter extends Component {
     return (
       <div className="row">
         <div className="col-md-12">
-          <div className="form-group col-md-3">
-            <label htmlFor="taxaSelect">Filter on taxon</label>
+          <div className="form-group col-md-6">
+            {/* <label htmlFor="taxaSelect">Filter on taxon</label> */}
             <select className="form-control" id="taxaSelect" onChange={this.onChange}>
               {options}
             </select>

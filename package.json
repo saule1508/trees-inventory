@@ -3,18 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node index.js",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production node index.js"
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
+    "bootstrap": "^4.3.1",
     "bootstrap-css-only": "^4.3.1",
+    "express": "^4.17.1",
+    "i18next": "^19.0.0",
     "isomorphic-unfetch": "^3.0.0",
     "next": "9.1.2",
+    "next-i18next": "^2.0.0",
+    "nprogress": "^0.2.0",
     "ol": "^6.1.1",
     "react": "16.11.0",
-    "react-dom": "16.11.0"
+    "react-dom": "16.11.0",
+    "reactstrap": "^8.1.1"
   },
   "devDependencies": {
     "eslint": "^6.6.0",

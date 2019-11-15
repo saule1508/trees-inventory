@@ -7,8 +7,14 @@ export default function handle(req, res) {
     const featureCollection = await response.json();
     res.status(200).end(JSON.stringify(featureCollection))
     */
+    const t = new Date();
     const featureCollection = require('../../data/geoserver_getfeature.json');
-    res.status(200).end(JSON.stringify(featureCollection))   
+    let t1 = new Date() - t;
+    console.log(`time ${t1} ms`);
+    const str = JSON.stringify(featureCollection);
+    t1 = new Date() - t;
+    console.log(`time ${t1} ms`);
+    res.status(200).end(str)   
   } catch(e){
     console.log(e);
     res.status(500).end(e.toString());
