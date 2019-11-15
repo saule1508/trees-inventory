@@ -3,5 +3,6 @@
   "about": "A propos",
   "language": "Langue",
   "map": "Carte",
-  "error-without-status": "An error occurred on the server"
+  "circonference": "Circonférence",
+  "apropostexte": "Voici la page a propos"
 }
