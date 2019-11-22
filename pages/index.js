@@ -11,6 +11,20 @@ const Index = props => (
   </Layout>
 );
 
+const emptyFeatureCollection = {
+  "type":"FeatureCollection",
+  "features":[],
+  "totalFeatures": 0,
+  "numberMatched": 0,
+  "numberReturned": 0,
+  "timeStamp":"2019-11-06T20:26:47.313Z",
+  "crs": {
+          "type":"name",
+          "properties":{"name":"urn:ogc:def:crs:EPSG::31370"}
+         }
+}
+
+
 Index.getInitialProps = async ({req}) => {
   let onServer = req ? 'yes' : 'no'
   console.log(`getInitialProps, onServer is ${onServer}`);

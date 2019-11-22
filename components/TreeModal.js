@@ -12,7 +12,7 @@ const TreeModal = (props) => {
   const rows = [];
   Object.keys(values).forEach((k)=>{
     if (k !== 'geometry'){
-      rows.push((<tr key={values["ID_ARBRE_CMS"]}>
+      rows.push((<tr key={k}>
         <td key={1}>{k}</td><td key={2}>{values[k]}</td>
       </tr>))
     }
