@@ -4,7 +4,6 @@ import { withTranslation } from "../i18n";
 import { convertFeatureCollection } from "../utils/index.js";
 
 import "../node_modules/ol/ol.css";
-import { runInThisContext } from "vm";
 
 let lastMove;
 
@@ -13,14 +12,15 @@ let lastMove;
 class MapBru extends Component {
   constructor(props) {
     super(props);
-    this.state = { filter: this.props.filter };
+    this.state = { mapOSM: this.props.mapOSM };
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.filter != this.props.filter) {
+    if (nextProps.filter != this.props.filter || nextProps.showCut != this.props.showCut) {
       console.log(`filter has changed to ${nextProps.filter}`);
       this.setVectorSource(nextProps.featureCollection);
     }
+    // no re-render needed, map will update life
     return false;
   }
 
@@ -304,8 +304,21 @@ class MapBru extends Component {
   }
 }
 
-Map.propTypes = {
+MapBru.propTypes = {
   featureCollection: PropTypes.object.isRequired,
+  onTreeSelected: PropTypes.func.isRequired,
+  filter: PropTypes.string,
+  showCut: PropTypes.bool.isRequired,
+  mapOSM: PropTypes.bool.isRequired
 };
+
+MapBru.defaultProps = {
+  "featureCollection": {type: "featureCollection", features: []},
+  "onTreeSelected": ()=>{},
+  "filter": null,
+  "showCut": true,
+  "mapOSM": false
+
+}
 
 export default withTranslation()(MapBru);

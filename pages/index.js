@@ -4,10 +4,12 @@ import PropTypes from 'prop-types'
 import { server } from '../config/config.js'
 import { withTranslation } from '../i18n'
 import fetch from 'isomorphic-unfetch'
+import { getFilters } from '../utils/index.js'
 
 const Index = props => (
   <Layout>
-    <Map featureCollection={props.featureCollection} taxa={props.taxa} />
+    <Map featureCollection={props.featureCollection} taxa={props.taxa} 
+      statuses={props.statuses} rarete={props.rarete} mapOSM={props.mapOSM} />
   </Layout>
 );
 
@@ -26,41 +28,26 @@ const emptyFeatureCollection = {
 
 
 Index.getInitialProps = async ({req}) => {
+  const mapOSM= false;
   let onServer = req ? 'yes' : 'no'
   console.log(`getInitialProps, onServer is ${onServer}`);
   const start = new Date();
   try {
-    const response = await fetch(`${server}/api/remarkable_feature`);
+    const response = await fetch(`${server}/api/remarkable_feature?mapOSM=${mapOSM}`);
     let t1 = new Date() - start;
     console.log(`before json ${t1} ms`);
     const featureCollection = await response.json();
     t1 = new Date() - start;
     console.log(`After json ${t1} ms`);
-    const taxa = {};
-    featureCollection.features.forEach((e)=> {
-      const taxon = e.properties['TAX_LA'] 
-      if (taxon in taxa){
-        taxa[taxon] = taxa[taxon]+1;
-      } else {
-        taxa[taxon] = 0;
-      }
-    })
+    const { taxaSorted, status, rarete } = getFilters(featureCollection);
     t1 = new Date() - start;
-    console.log(`After taxa ${t1} ms`);
-    const taxaSorted = Object.keys(taxa).sort((a,b) => {
-        if (a < b){
-        return -1;
-      }
-      if (a === b){
-        return 0;
-      }
-      return 1
-    })
-    t1 = new Date() - start;
-    console.log(`After taxa sort ${t1} ms`);
+    console.log(`After getFilters ${t1} ms`);
     return {
       featureCollection,
       taxa : taxaSorted,
+      statuses: status,
+      rarete,
+      mapOSM,
       namespacesRequired: ['common'],
     };
   } catch (e){
@@ -74,7 +61,17 @@ Index.getInitialProps = async ({req}) => {
 Index.propTypes = {
   featureCollection: PropTypes.object.isRequired,
   taxa: PropTypes.array.isRequired,
+  status: PropTypes.object.isRequired,
+  rarete: PropTypes.object.isRequired,
+  mapOSM: PropTypes.bool.isRequired,
   t: PropTypes.func.isRequired,
 }
 
+Index.defaultProps = {
+  featureCollection: emptyFeatureCollection,
+  taxa : [],
+  status: {},
+  rarete: {},
+  mapOSM: false
+}
 export default withTranslation('common')(Index)

@@ -8,7 +8,7 @@ import MapLegend from './MapLegend';
 class Map extends Component {
   constructor(props) {
     super(props);
-    this.state = {'filter': null, modalOpened: false, selectedTree: null,featureCollection: this.props.featureCollection}
+    this.state = {'filter': null, modalOpened: false, selectedTree: null,featureCollection: this.props.featureCollection, showCut: true, mapOSM: false}
   } 
 
   onTreeSelected = (t) =>{
@@ -17,7 +17,9 @@ class Map extends Component {
   }
   onModalClose = () =>{
     this.setState({modalOpened: false, selectedTree: null});
-   
+  }
+  onToggleCut = () => {
+    this.setState(state=>{showCut : ! state.showCut});
   }
 
   onFilterSelected = (newFilter) => {
@@ -39,9 +41,15 @@ class Map extends Component {
       return (
         <div>
           <TreeModal onClose={this.onModalClose} isOpen={this.state.modalOpened} values={this.state.selectedTree} />
-          <MapFilter onSelect={this.onFilterSelected} filter={this.state.filter} taxa={this.props.taxa} />
+          <MapFilter onSelect={this.onFilterSelected} filter={this.state.filter} 
+            taxa={this.props.taxa} statuses={this.props.statuses} rarete={this.props.rarete} />
           <MapLegend />
-          <MapBru filter={this.state.filter} featureCollection={this.state.featureCollection} onTreeSelected={this.onTreeSelected} />
+          {/*
+          <MapBru filter={this.state.filter} 
+            featureCollection={this.state.featureCollection} 
+            onTreeSelected={this.onTreeSelected},
+            mapOSM={this.props.mapOSM} />
+          */}
         </div>
     );
   }
@@ -50,7 +58,16 @@ class Map extends Component {
 Map.propTypes = {
   featureCollection: PropTypes.object.isRequired,
   taxa: PropTypes.array.isRequired,
-  error: PropTypes.string
+  statuses: PropTypes.object.isRequired,
+  rarete: PropTypes.object.isRequired,
+  mapOSM: PropTypes.bool.isRequired
 }
 
+Map.defaultProps = {
+  featureCollection: {type: "FeatureCollection", features:[]},
+  taxa : [],
+  status: {},
+  rarete: {},
+  mapOSM: false
+}
 export default Map;
