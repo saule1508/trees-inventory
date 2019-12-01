@@ -16,8 +16,8 @@ class MapBru extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.filter != this.props.filter || nextProps.showCut != this.props.showCut) {
-      console.log(`filter has changed to ${nextProps.filter}`);
+    if (nextProps.filters != this.props.filters || nextProps.showCut != this.props.showCut) {
+      console.log(`filter has changed to ${nextProps.filters}`);
       this.setVectorSource(nextProps.featureCollection);
     }
     // no re-render needed, map will update life

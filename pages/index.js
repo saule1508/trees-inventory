@@ -9,7 +9,7 @@ import { getFilters } from '../utils/index.js'
 const Index = props => (
   <Layout>
     <Map featureCollection={props.featureCollection} taxa={props.taxa} 
-      statuses={props.statuses} rarete={props.rarete} mapOSM={props.mapOSM} />
+      status={props.status} rarete={props.rarete} mapOSM={props.mapOSM} />
   </Layout>
 );
 
@@ -45,7 +45,7 @@ Index.getInitialProps = async ({req}) => {
     return {
       featureCollection,
       taxa : taxaSorted,
-      statuses: status,
+      status,
       rarete,
       mapOSM,
       namespacesRequired: ['common'],

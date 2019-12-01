@@ -87,3 +87,31 @@ export const getFilters = (featureCollection) => {
 		rarete
 	}
 }
+
+export const filterFeatures = ( { features, filters } ) => {
+	console.log(filters);
+	const arrayOfRareteString = filters.rarete ? filters.rarete.map(e=>e.value) : [];
+	const arrayOfStatus = filters.status ? filters.status.map(e=>e.value) : [];
+	console.log(arrayOfStatus);
+	const filtered = features.filter((f)=>{
+		const rareteStr = f.properties['RARETE'];
+		const status = f.properties['STATUS'];
+		if (filters.taxa && filters.taxa.value){
+			if (f.properties['TAX_LA'] !== filters.taxa.value){
+				return false;
+			}
+		}
+		if (arrayOfRareteString.length > 0){
+			if (! arrayOfRareteString.includes(rareteStr)){
+				return false;
+			}
+		}
+		if (arrayOfStatus.length > 0){
+			if (! arrayOfStatus.includes(status)){
+				return false;
+			}
+		}
+		return f;
+	})
+	return filtered;
+}
