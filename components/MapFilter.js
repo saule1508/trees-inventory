@@ -13,10 +13,10 @@ class MapFilter extends Component {
   }
 
   render() {
-    const { taxa } = this.props;
+    const { taxa, taxaSorted } = this.props.filters;
     const { filter } = this.state;
-    const options = [(<option>All</option>)];
-    taxa.forEach(e => {
+    const options = [(<option key="All">All</option>)];
+    taxaSorted.forEach(e => {
       if (e === filter) {
         options.push(<option key={e} selected >{e}</option>);
       } else {
@@ -26,8 +26,8 @@ class MapFilter extends Component {
     return (
       <div className="row">
         <div className="col-md-12">
-          <div className="form-group col-md-3">
-            <label htmlFor="taxaSelect">Filter on taxon</label>
+          <div className="form-group col-md-6">
+            {/* <label htmlFor="taxaSelect">Filter on taxon</label> */}
             <select className="form-control" id="taxaSelect" onChange={this.onChange}>
               {options}
             </select>
@@ -41,13 +41,17 @@ class MapFilter extends Component {
 MapFilter.propTypes = {
   filter: PropTypes.string,
   onSelect: PropTypes.func.isRequired,
-  taxa: PropTypes.array.isRequired
+  filters: PropTypes.shape({
+    taxa: PropTypes.shape.isRequired,
+    status: PropTypes.shape,
+    rarete: PropTypes.shape
+  }).isRequired
 }
 
 MapFilter.defaultProps = {
   filter: null,
   onSelect: () => { },
-  taxa: []
+  filters: { taxa: [], status: [], rarete: [] }
 }
 
   export default MapFilter

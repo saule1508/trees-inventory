@@ -2,18 +2,30 @@ import Layout from '../components/MyLayout';
 import Map from '../components/Map';
 import PropTypes from 'prop-types'
 import { server } from '../config/config.js'
+import { withTranslation } from '../i18n'
+import fetch from 'isomorphic-unfetch'
+import { getFilters } from '../utils/index.js'
 
 const Index = props => (
   <Layout>
-    <Map featureCollection={props.featureCollection} taxa={props.taxa} />
+    <Map featureCollection={props.featureCollection} filters={props.filters} />
   </Layout>
 );
 
-Index.getInitialProps = async () => {
-  console.log('getInitialProps');
+Index.getInitialProps = async ({req}) => {
+  let onServer = req ? 'yes' : 'no'
+  console.log(`getInitialProps, onServer is ${onServer}`);
+  const start = new Date();
   try {
     const response = await fetch(`${server}/api/remarkable_feature`);
+    let t1 = new Date() - start;
+    console.log(`before json ${t1} ms`);
     const featureCollection = await response.json();
+    t1 = new Date() - start;
+    console.log(`After json ${t1} ms`);
+    const filters = getFilters(featureCollection); 
+    console.log(filters.status);
+    /*
     const taxa = {};
     featureCollection.features.forEach((e)=> {
       const taxon = e.properties['TAX_LA'] 
@@ -23,17 +35,24 @@ Index.getInitialProps = async () => {
         taxa[taxon] = 0;
       }
     })
+    t1 = new Date() - start;
+    console.log(`After taxa ${t1} ms`);
+    const taxaSorted = Object.keys(taxa).sort((a,b) => {
+        if (a < b){
+        return -1;
+      }
+      if (a === b){
+        return 0;
+      }
+      return 1
+    })
+    t1 = new Date() - start;
+    console.log(`After taxa sort ${t1} ms`);
+    */
     return {
       featureCollection,
-      taxa : Object.keys(taxa).sort((a,b) => {
-        if (a < b){
-          return -1;
-        }
-        if (a === b){
-          return 0;
-        }
-        return 1
-      })
+      filters : filters,
+      namespacesRequired: ['common'],
     };
   } catch (e){
     console.log(e);
@@ -45,7 +64,13 @@ Index.getInitialProps = async () => {
 
 Index.propTypes = {
   featureCollection: PropTypes.object.isRequired,
-  taxa: PropTypes.array.isRequired
+  filters: PropTypes.shape({
+    taxa: PropTypes.shape.isRequired,
+    status: PropTypes.shape.isRequired,
+    rarete: PropTypes.shape.isRequired
+  }).isRequired,
+  taxa: PropTypes.array.isRequired,
+  t: PropTypes.func.isRequired,
 }
 
-export default Index;
+export default withTranslation('common')(Index)

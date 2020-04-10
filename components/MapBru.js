@@ -1,34 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import Circle from './Circle';
+import { withTranslation } from '../i18n'
 
 import "../node_modules/ol/ol.css"
 
 let lastMove;
 
-const Legend = () => {
-  return (
-    <div className="row">
-      <div className="col-md-12">
-        <strong>Circonference (cm): </strong> 
-        <span style={{"marginRight": "10px"}}><Circle bgColor="yellow"/> {"< 200"}</span>
-        <span style={{"marginRight": "10px"}}><Circle bgColor="green" /> {"200 - 400"}</span>
-        <span style={{"marginRight": "10px"}}><Circle bgColor="orange" /> {"400 - 600"}</span>
-        <span style={{"marginRight": "10px"}}><Circle bgColor="red" /> {"> 600"}</span>
-      </div>
-    </div>
-  )
-}
-
-const lang = 'FR';
-const wmsOrthoConfig = {
-  srs: 'EPSG:31370',
-  params: {
-    LAYERS: `Urbis:urbis${lang === 'en' ? 'FR' : lang.toUpperCase()}`,
-    VERSION: "1.1.1",
-  },
-  url: "https://geoservices-urbis.irisnet.be/geoserver/ows",
-};
 
 class MapBru extends Component {
   constructor(props) {
@@ -47,7 +24,18 @@ class MapBru extends Component {
   componentDidMount() {
 
     console.log("componentDidMount");
+    console.log(`language is ${this.props.i18n.language}`);
 
+    const lang = this.props.i18n.language;
+    const wmsOrthoConfig = {
+      srs: 'EPSG:31370',
+      params: {
+        LAYERS: `Urbis:urbis${lang === 'en' ? 'FR' : lang.toUpperCase()}`,
+        VERSION: "1.1.1",
+      },
+      url: "https://geoservices-urbis.irisnet.be/geoserver/ows",
+    };
+    
     const Map = require("ol/Map").default
     const View = require("ol/View").default;
 
@@ -113,9 +101,11 @@ class MapBru extends Component {
       style: function(feature) {
         const circonf = feature.get('CIRCONFERENCE');
         let treeColor = "yellow";
-        if (circonf > 600){
-          treeColor = "red";
+        if (circonf > 500){
+          treeColor = "purple";
         } else if (circonf > 400){
+          treeColor = "red";
+        } else if (circonf > 300){
           treeColor = "orange";
         } else if (circonf > 200){
           treeColor = "green";
@@ -174,19 +164,19 @@ class MapBru extends Component {
         overlay.setPosition(undefined);
       }
     });
-    /*
+    
     this.map.on('click', (evt) => {
 
       const pixel = evt.pixel !== undefined ? evt.pixel : [0, 0];
       const feature = this.map.getFeaturesAtPixel(pixel);
       let cName = '';
-      // if (feature && feature.length > 0) {
-      //  this.props.onClick(feature[0]);
-      //} 
+      if (feature && feature.length > 0) {
+        this.props.onTreeSelected(feature[0].values_);
+      } 
       console.log(cName);
 
     });
-    */
+    
   }
 
   setVectorSource = (featureCollection) => {
@@ -207,7 +197,6 @@ class MapBru extends Component {
       console.log('-> render MapBru')
       return (
         <div>
-          <Legend />
           <div className="row">
             <div id="mapContainer" ref="mapContainer"> 
             </div>
@@ -281,4 +270,4 @@ Map.propTypes = {
   featureCollection: PropTypes.object.isRequired
 }
 
-export default MapBru
+export default withTranslation()(MapBru)

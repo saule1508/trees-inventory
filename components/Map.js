@@ -1,15 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MapFilter from './MapFilter'
+import TreeModal from './TreeModal'
 import MapBru from './MapBru'
-import fetch from 'isomorphic-unfetch';
+import MapLegend from './MapLegend';
 
 class Map extends Component {
   constructor(props) {
     super(props);
-    this.state = {'filter': null, featureCollection: this.props.featureCollection}
+    this.state = {'filter': null, modalOpened: false, selectedTree: null,featureCollection: this.props.featureCollection}
   } 
-  
+
+  onTreeSelected = (t) =>{
+    console.log(t);
+    this.setState({modalOpened: true, selectedTree: t});
+  }
+  onModalClose = () =>{
+    this.setState({modalOpened: false, selectedTree: null});
+   
+  }
+
   onFilterSelected = (newFilter) => {
     console.log('onFilterSelected');
     console.log(newFilter);
@@ -28,8 +38,10 @@ class Map extends Component {
       console.log('-> render Map')
       return (
         <div>
-          <MapFilter onSelect={this.onFilterSelected} filter={this.state.filter} taxa={this.props.taxa} />
-          <MapBru filter={this.state.filter} featureCollection={this.state.featureCollection} />
+          <TreeModal onClose={this.onModalClose} isOpen={this.state.modalOpened} values={this.state.selectedTree} />
+          <MapFilter onSelect={this.onFilterSelected} filter={this.state.filter} filters={this.props.filters} />
+          <MapLegend />
+          <MapBru filter={this.state.filter} featureCollection={this.state.featureCollection} onTreeSelected={this.onTreeSelected} />
         </div>
     );
   }
@@ -37,7 +49,11 @@ class Map extends Component {
 
 Map.propTypes = {
   featureCollection: PropTypes.object.isRequired,
-  taxa: PropTypes.array.isRequired,
+  filters: PropTypes.shape({
+    taxa: PropTypes.shape.isRequired,
+    status: PropTypes.shape.isRequired,
+    rarete: PropTypes.shape.isRequired
+  }).isRequired,
   error: PropTypes.string
 }
 
