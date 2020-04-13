@@ -13,6 +13,8 @@ const MapLegend = (props) => {
         <span style={{"marginRight": "10px"}}><Circle bgColor="orange" /> {"300 - 400"}</span>
         <span style={{"marginRight": "10px"}}><Circle bgColor="red" /> {"400 > 500"}</span>
         <span style={{"marginRight": "10px"}}><Circle bgColor="purple" /> {"> 500"}</span>
+        <span style={{"marginRight": "10px", "fontWeight": "bold"}}> X {props.t('disappeared')}</span>
+
         <div><small>({props.t('map')} source: urbisonline.brussels, data: Brussels Planning and Heritage)</small></div>        
       </div>
     </div>

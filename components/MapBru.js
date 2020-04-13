@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import { withTranslation } from '../i18n'
-
+import { getStyleForFeature } from '../utils'
 import "../node_modules/ol/ol.css"
 
 let lastMove;
@@ -98,6 +98,7 @@ class MapBru extends Component {
     const Style = require("ol/style/Style").default; 
     this.vectorLayer = new this.VectorLayer({
       source: vectorSource,
+      /*
       style: function(feature) {
         const circonf = feature.get('CIRCONFERENCE');
         let treeColor = "yellow";
@@ -118,6 +119,8 @@ class MapBru extends Component {
           })
         })
       }
+      */
+      style: getStyleForFeature
     })
       // style: new Style({ image: image }),
     closer.onclick = function() {
