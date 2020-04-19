@@ -1,13 +1,15 @@
 const proj4 = require("proj4");
 
 
-proj4.defs("EPSG:31370", "+proj=lcc +lat_1=51.16666723333333 +lat_2=49.8333339 +lat_0=90 +lon_0=4.367486666666666 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +towgs84=-106.869,52.2978,-103.724,0.3366,-0.457,1.8422,-1.2747 +units=m +no_defs");
+// proj4.defs("EPSG:31370", "+proj=lcc +lat_1=51.16666723333333 +lat_2=49.8333339 +lat_0=90 +lon_0=4.367486666666666 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +towgs84=-106.869,52.2978,-103.724,0.3366,-0.457,1.8422,-1.2747 +units=m +no_defs");
+// proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
 
 const LambertToMercator = (c) => {
 	const lambert = "+proj=lcc +lat_1=51.16666723333333 +lat_2=49.8333339 +lat_0=90 +lon_0=4.367486666666666 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +towgs84=-106.869,52.2978,-103.724,0.3366,-0.457,1.8422,-1.2747 +units=m +no_defs";
 
 	console.log(c);
-	const result = proj4(new proj4.Proj('EPSG:31370'), 'WGS84', c);
+	// const result = proj4(new proj4.Proj('EPSG:31370'), 'WGS84', c);
+	const result = proj4(new proj4.Proj(lambert), 'WGS84', c);
 	console.log(result);
 	return result;
 }
@@ -104,5 +106,12 @@ const getFilters = (featureCollection) => {
 		rarete
 	}
 }
-filters=getFilters(featureCollection);
-console.log(filters['status']);
+// filters=getFilters(featureCollection);
+// console.log(filters['status']);
+
+const lambert = [151880,170151];
+
+
+const google = [489321.196879,6593338.630128]
+
+const converted = LambertToMercator(lambert);

@@ -43,6 +43,7 @@ class MapBru extends Component {
     const content = this.refs.popup_content;
     const closer = this.refs.popup_closer;
     const Overlay = require("ol/Overlay").default;
+    const OSM = require("ol/source").OSM;
 
     const overlay = new Overlay({
       element: container,
@@ -55,29 +56,51 @@ class MapBru extends Component {
     const Circle = require("ol/style").Circle;
     const Fill = require("ol/style").Fill;
     const Stroke = require("ol/style").Stroke;
-    
+
     const proj = require("ol/proj");
     const Projection = require("ol/proj").Projection;
+    const fromLonLat = require("ol/proj").fromLonLat;
     const EPSG31370 = new Projection({
       code: 'EPSG:31370',
       extent: [14697.30, 22635.80, 291071.84, 246456.18],
       worldExtent: [2.5, 49.5, 6.4, 51.51],
       global: false,
     });
+    const bruLonLat = [4.34878, 50.85045];
+    const bruWebMercator = fromLonLat(bruLonLat);
+
     const Tile = require('ol/layer').Tile;
     const TileWMS = require('ol/source').TileWMS;
-
-    this.baseLayer = new Tile({
-      source: new TileWMS({
+    
+    this.baseLayers = {
+      "irisnet": new Tile({
+        source: new TileWMS({
           projection: proj.get(wmsOrthoConfig.srs),
           params: {
               ...wmsOrthoConfig.params,
               'TILED': true,
           },
           url: wmsOrthoConfig.url,
+        }),
       }),
-    });
-    
+      "osm": {
+        source: new OSM()
+      }
+    }
+    this.views = {
+      'osm': new View ({
+        projection: "EPSG:3857",
+        center: bruWebMercator,
+        zoom: 12,
+        rotation: 0
+      }),
+      'irisnet': new View({
+        projection: EPSG31370,
+        center: [148651, 170897],
+        zoom: 6,
+        rotation: 0,
+      })
+    }
     this.view = new View({
       projection: EPSG31370,
       center: [148651, 170897],
@@ -98,31 +121,9 @@ class MapBru extends Component {
     const Style = require("ol/style/Style").default; 
     this.vectorLayer = new this.VectorLayer({
       source: vectorSource,
-      /*
-      style: function(feature) {
-        const circonf = feature.get('CIRCONFERENCE');
-        let treeColor = "yellow";
-        if (circonf > 500){
-          treeColor = "purple";
-        } else if (circonf > 400){
-          treeColor = "red";
-        } else if (circonf > 300){
-          treeColor = "orange";
-        } else if (circonf > 200){
-          treeColor = "green";
-        };
-        return new Style({
-          image: new Circle({
-            "radius": 5,
-            "fill": new Fill({ color: treeColor }),
-            "stroke": new Stroke({ color: "grey", width: 1 })
-          })
-        })
-      }
-      */
       style: getStyleForFeature
     })
-      // style: new Style({ image: image }),
+
     closer.onclick = function() {
       overlay.setPosition(undefined);
       closer.blur();
@@ -130,10 +131,10 @@ class MapBru extends Component {
     }
     
     this.map =  new Map({
-      view: this.view,
+      view: this.views['irisnet'],
       target: this.refs.mapContainer,
       overlays: [overlay],
-      layers: [this.baseLayer, this.vectorLayer],
+      layers: [this.baseLayers['irisnet'], this.vectorLayer],
     });
 
     this.map.on("pointermove", (evt) => {
