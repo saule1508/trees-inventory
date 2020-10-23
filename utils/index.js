@@ -1,4 +1,23 @@
+import { server } from '../config/config.js'
+import fetch from 'isomorphic-unfetch'
 
+export const getFeatureCollection = async (epsg) => {
+  const start = new Date();
+  try {
+    const response = await fetch(`${server}/api/remarkable_feature?epsg=${epsg}`);
+    let t1 = new Date() - start;
+    console.log(`before json ${t1} ms`);
+    const featureCollection = await response.json();
+    t1 = new Date() - start;
+    console.log(`After json ${t1} ms`);
+		return featureCollection;
+  } catch (e){
+    console.log(e);
+    return {
+      error: e
+    }
+  }
+}
 
 export const getFilters = (featureCollection) => {
 	const taxa = {};

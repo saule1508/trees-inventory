@@ -54,7 +54,7 @@ const TreeModal = (props) => {
 TreeModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  values: PropTypes.object.isRequired,
+  values: PropTypes.object,
 }
 TreeModal.defaultProps = {
   onClose : () => {},

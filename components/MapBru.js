@@ -10,7 +10,7 @@ let lastMove;
 class MapBru extends Component {
   constructor(props) {
     super(props);
-    this.state = {'filter': this.props.filter}
+    this.state = {'filter': this.props.filter, 'projection': this.props.projection}
   } 
   
   shouldComponentUpdate(nextProps, nextState) {
@@ -18,14 +18,20 @@ class MapBru extends Component {
       console.log(`filter has changed to ${nextProps.filter}`);
       this.setVectorSource(nextProps.featureCollection);
     }
+    if (nextProps.projection != this.props.projection){
+      console.log('shouldComponentupdate: new projection, so return true');
+      return true;
+    }
     return false;
   }
 
   componentDidMount() {
 
-    console.log("componentDidMount");
     console.log(`language is ${this.props.i18n.language}`);
-
+    // Open Street Map (projection 4326) or irisnet (projection 31370)
+    const mapName = this.state.projection ===  '31370' ? 'irisnet' : 'osm';
+    console.log(`componentDidMount, projection is ${this.state.projection} and mapName is ${mapName}`);
+    console.log(this.props.featureCollection);
     const lang = this.props.i18n.language;
     const wmsOrthoConfig = {
       srs: 'EPSG:31370',
@@ -53,9 +59,9 @@ class MapBru extends Component {
       }
     });
 
-    const Circle = require("ol/style").Circle;
-    const Fill = require("ol/style").Fill;
-    const Stroke = require("ol/style").Stroke;
+    // const Circle = require("ol/style").Circle;
+    // const Fill = require("ol/style").Fill;
+    // const Stroke = require("ol/style").Stroke;
 
     const proj = require("ol/proj");
     const Projection = require("ol/proj").Projection;
@@ -68,7 +74,8 @@ class MapBru extends Component {
     });
     const bruLonLat = [4.34878, 50.85045];
     const bruWebMercator = fromLonLat(bruLonLat);
-
+    console.log(bruWebMercator);
+    // const bruWebMercator = [155255,166013];
     const Tile = require('ol/layer').Tile;
     const TileWMS = require('ol/source').TileWMS;
     
@@ -83,13 +90,15 @@ class MapBru extends Component {
           url: wmsOrthoConfig.url,
         }),
       }),
-      "osm": {
+      "osm": new Tile({
         source: new OSM()
-      }
+      })
     }
     this.views = {
       'osm': new View ({
         projection: "EPSG:3857",
+        //projection: 'EPSG:4326',
+        //center: bruLonLat,
         center: bruWebMercator,
         zoom: 12,
         rotation: 0
@@ -101,43 +110,64 @@ class MapBru extends Component {
         rotation: 0,
       })
     }
+    /*
     this.view = new View({
       projection: EPSG31370,
       center: [148651, 170897],
       zoom: 6,
       rotation: 0,
     });
-
+    */
     this.GeoJSON = require("ol/format").GeoJSON;
     // const TileLayer = require("ol/layer").Tile;
     this.VectorLayer = require("ol/layer").Vector;
     // const Source = require("ol/source");
     this.VectorSource = require("ol/source/Vector").default;
 
-    const vectorSource = new this.VectorSource({
-      features: new this.GeoJSON().readFeatures(this.props.featureCollection),
-    })
+    this.vectorSources = {
+      'irisnet': new this.VectorSource({
+        features: new this.GeoJSON().readFeatures(this.props.featureCollection),
+      }),
+      'osm': new this.VectorSource({
+        features: new this.GeoJSON().readFeatures(this.props.featureCollection, {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:4326'
+        }),
+      })
+    }
 
     const Style = require("ol/style/Style").default; 
-    this.vectorLayer = new this.VectorLayer({
-      source: vectorSource,
-      style: getStyleForFeature
-    })
+    this.vectorLayers = {
+      'irisnet':  new this.VectorLayer({
+        source: this.vectorSources['irisnet'],
+        style: getStyleForFeature
+      }),
+      'osm': new this.VectorLayer({
+        source: this.vectorSources['osm'],
+        style: getStyleForFeature
+      })
+    }
 
     closer.onclick = function() {
       overlay.setPosition(undefined);
       closer.blur();
       return false;
     }
-    
+    /*
     this.map =  new Map({
-      view: this.views['irisnet'],
+      view: this.views[mapName],
       target: this.refs.mapContainer,
       overlays: [overlay],
-      layers: [this.baseLayers['irisnet'], this.vectorLayer],
+      layers: [this.baseLayers[mapName], this.vectorLayers[mapName]],
     });
-
-    this.map.on("pointermove", (evt) => {
+    */
+   this.map =  new Map({
+    view: this.views[mapName],
+    target: this.refs.mapContainer,
+    overlays: [overlay],
+    layers: [this.baseLayers[mapName],this.vectorLayers[mapName]],
+  });
+  this.map.on("pointermove", (evt) => {
       /*
       const coordinate = evt.coordinate;
       console.log(coordinate);
@@ -271,7 +301,14 @@ class MapBru extends Component {
 }
 
 Map.propTypes = {
-  featureCollection: PropTypes.object.isRequired
+  featureCollection: PropTypes.object.isRequired,
+  projection: PropTypes.oneOf(['31370', '4326']).isRequired
 }
+
+Map.defaultProps = {
+  projection: '31370'
+}
+
+
 
 export default withTranslation()(MapBru)

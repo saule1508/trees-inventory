@@ -109,9 +109,10 @@ const getFilters = (featureCollection) => {
 // filters=getFilters(featureCollection);
 // console.log(filters['status']);
 
-const lambert = [151880,170151];
+const lambert = [151877,169992];
 
 
 const google = [489321.196879,6593338.630128]
 
 const converted = LambertToMercator(lambert);
+console.log(converted);

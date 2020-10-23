@@ -4,11 +4,17 @@ import MapFilter from './MapFilter'
 import TreeModal from './TreeModal'
 import MapBru from './MapBru'
 import MapLegend from './MapLegend';
+import { getFeatureCollection } from '../utils/index.js'
 
 class Map extends Component {
   constructor(props) {
     super(props);
-    this.state = {'filter': null, modalOpened: false, selectedTree: null,featureCollection: this.props.featureCollection}
+    this.state = {'filter': null, 
+      modalOpened: false, 
+      selectedTree: null,
+      featureCollection: this.props.featureCollection,
+      projection: this.props.projection
+    }
   } 
 
   onTreeSelected = (t) =>{
@@ -18,6 +24,18 @@ class Map extends Component {
   onModalClose = () =>{
     this.setState({modalOpened: false, selectedTree: null});
    
+  }
+  /* toggle between projections
+    epsg: 31370 for Lambert
+    epsg: 4326 for OSM
+  */
+
+  onProjectionChange = async (newProjection) => {
+    console.log(`onProjectionChange: new is ${newProjection}, state is ${this.state.projection}`);
+    // now we need another featureCollection
+    const newCollection = await getFeatureCollection(newProjection);
+    console.log('got new projection');
+    this.setState({ featureCollection: newCollection, projection: newProjection})
   }
 
   onFilterSelected = (newFilter) => {
@@ -39,9 +57,13 @@ class Map extends Component {
       return (
         <div>
           <TreeModal onClose={this.onModalClose} isOpen={this.state.modalOpened} values={this.state.selectedTree} />
-          <MapFilter onSelect={this.onFilterSelected} filter={this.state.filter} filters={this.props.filters} />
+          <MapFilter onSelect={this.onFilterSelected} onProjectionChange={this.onProjectionChange} 
+            filter={this.state.filter} filters={this.props.filters} projection={this.state.projection} />
           <MapLegend />
-          <MapBru filter={this.state.filter} featureCollection={this.state.featureCollection} onTreeSelected={this.onTreeSelected} />
+          <MapBru key={this.state.projection} filter={this.state.filter} 
+            featureCollection={this.state.featureCollection} 
+            projection={this.state.projection}
+            onTreeSelected={this.onTreeSelected} />
         </div>
     );
   }
@@ -54,7 +76,12 @@ Map.propTypes = {
     status: PropTypes.shape.isRequired,
     rarete: PropTypes.shape.isRequired
   }).isRequired,
+  projection: PropTypes.oneOf(['31370', '4326']),
   error: PropTypes.string
+}
+
+Map.defaultProps = {
+  projection: '31370'
 }
 
 export default Map;
