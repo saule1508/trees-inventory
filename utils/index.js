@@ -1,5 +1,5 @@
-import { server } from '../config/config.js'
 import fetch from 'isomorphic-unfetch'
+import { server } from '../config/config.js'
 
 export const getFeatureCollection = async (epsg) => {
   const start = new Date();

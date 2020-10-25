@@ -1,10 +1,38 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import PropTypes from 'prop-types';
 import MapFilter from './MapFilter'
 import TreeModal from './TreeModal'
-import MapBru from './MapBru'
+// import MapBru from './MapBru'
+import dynamic from 'next/dynamic'
 import MapLegend from './MapLegend';
 import { getFeatureCollection } from '../utils/index.js'
+
+
+const MapBruLeaf = dynamic(() => import('./MapBruLeaf'))
+
+
+function renderCompleted() {
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+      setMounted(true)
+
+      return () => {
+          setMounted(false)
+      }
+  });
+
+  return mounted;
+}
+
+const canUseDOM = !!(
+  typeof window !== 'undefined' &&
+          window.document &&
+          window.document.createElement
+  );
+
+
 
 class Map extends Component {
   constructor(props) {
@@ -54,16 +82,17 @@ class Map extends Component {
 
   render() {
       console.log('-> render Map')
+
       return (
         <div>
           <TreeModal onClose={this.onModalClose} isOpen={this.state.modalOpened} values={this.state.selectedTree} />
           <MapFilter onSelect={this.onFilterSelected} onProjectionChange={this.onProjectionChange} 
             filter={this.state.filter} filters={this.props.filters} projection={this.state.projection} />
           <MapLegend />
-          <MapBru key={this.state.projection} filter={this.state.filter} 
+          {canUseDOM && <MapBruLeaf key={this.state.projection} filter={this.state.filter} 
             featureCollection={this.state.featureCollection} 
             projection={this.state.projection}
-            onTreeSelected={this.onTreeSelected} />
+            onTreeSelected={this.onTreeSelected} />}
         </div>
     );
   }
@@ -81,7 +110,7 @@ Map.propTypes = {
 }
 
 Map.defaultProps = {
-  projection: '31370'
+  projection: '4326'
 }
 
 export default Map;

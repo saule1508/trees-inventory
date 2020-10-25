@@ -5,7 +5,7 @@ import { server } from '../config/config.js'
 import { withTranslation } from '../i18n'
 import { getFilters, getFeatureCollection } from '../utils/index.js'
 
-const myProjection = '3857';
+const myProjection = '4326'; // this is OSM default projection, equals to WGS 84. Lambert is EPSG:31370
 
 const Index = props => (
   <Layout>
@@ -47,7 +47,7 @@ Index.propTypes = {
   t: PropTypes.func.isRequired,
 }
 Index.defaultProps = {
-  projection: "31370" // default to Lambert 
+  projection: "4326" // "31370" is Lambert 
 }
 
 export default withTranslation('common')(Index)
