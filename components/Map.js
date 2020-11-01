@@ -8,7 +8,7 @@ import MapLegend from './MapLegend';
 import { getFeatureCollection } from '../utils/index.js'
 
 
-const MapBruLeaf = dynamic(() => import('./MapBruLeaf'))
+const MapBruLeaf = dynamic(() => import('./MapBruLeaf'),{ssr: false})
 
 
 function renderCompleted() {
@@ -44,10 +44,17 @@ class Map extends Component {
       projection: this.props.projection
     }
   } 
+  componentDidMount(){
+    this.nv.addEventListener('treeSelected', this.onTreeSelected);
+  }
+
+  componentWillUnmount(){
+    this.nv.removeEventListener('treeSelected', this.onTreeSelected);
+  }
 
   onTreeSelected = (t) =>{
-    console.log(t);
-    this.setState({modalOpened: true, selectedTree: t});
+    console.log(t.detail.properties);
+    this.setState({modalOpened: true, selectedTree: t.detail.properties});
   }
   onModalClose = () =>{
     this.setState({modalOpened: false, selectedTree: null});
@@ -84,7 +91,7 @@ class Map extends Component {
       console.log('-> render Map')
 
       return (
-        <div>
+        <div ref={elem => this.nv = elem}>
           <TreeModal onClose={this.onModalClose} isOpen={this.state.modalOpened} values={this.state.selectedTree} />
           <MapFilter onSelect={this.onFilterSelected} onProjectionChange={this.onProjectionChange} 
             filter={this.state.filter} filters={this.props.filters} projection={this.state.projection} />

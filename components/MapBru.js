@@ -5,7 +5,7 @@ import { getStyleForFeature } from '../utils'
 import "../node_modules/ol/ol.css"
 
 let lastMove;
-
+const event = new Event('treeSelected');
 
 class MapBru extends Component {
   constructor(props) {
@@ -26,7 +26,7 @@ class MapBru extends Component {
   }
 
   componentDidMount() {
-
+    window.addEventListener('treeSelected', this.onTreeSelected);
     console.log(`language is ${this.props.i18n.language}`);
     // Open Street Map (projection 4326) or irisnet (projection 31370)
     const mapName = this.state.projection ===  '31370' ? 'irisnet' : 'osm';
@@ -225,6 +225,9 @@ class MapBru extends Component {
     console.log(layer)
     layer.setSource(newVectorSource);
     
+  }
+  componentWillUnmount(){
+    window.removeEventListener('treeSelected');
   }
 
   render() {

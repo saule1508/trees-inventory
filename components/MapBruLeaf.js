@@ -3,8 +3,13 @@ import PropTypes from 'prop-types'
 import { withTranslation } from '../i18n'
 // import { getStyleForFeature } from '../utils'
 import L from 'leaflet';
+
+
 // Markers will not appear, so I linked directly in MyLayout.js
 // import "../node_modules/leaflet/dist/leaflet.css"
+
+
+
 
 let lastMove;
 
@@ -62,14 +67,28 @@ const pToLayer = (feature, latlng) => {
   }
   return L.circleMarker(latlng, style);
 }
+// const treeSelected = new Event('treeSelected');
 
+window.whenClicked = (layer,prop)=>{
+  const feature = prop.target.feature;
+  const event = new CustomEvent('treeSelected', { detail: feature });
+  window.dispatchEvent(event);
+}
 
 class MapBruLeaf extends Component {
   constructor(props) {
     super(props);
     this.state = { 'filter': this.props.filter, 'projection': this.props.projection }
+    this.whenClicked = this.whenClicked.bind(this)
   }
-
+  
+  whenClicked(feature,layer){
+    console.log(layer.target.feature.properties.TAX_LA)
+    console.log(this.props.onTreeSelected)
+    this.props.onTreeSelected(layer.target.feature.properties);
+    // alert(`you cliked ${feature.properties.TAX_LA}`)
+  }
+  
   componentDidMount() {
 
     console.log(`language is ${this.props.i18n.language}`);
@@ -87,7 +106,20 @@ class MapBruLeaf extends Component {
     //var marker = L.marker([50.85045, 4.34878]).addTo(map);
     // const marker = L.marker([50.84127762,4.40460134]).addTo(this.map);
     this.geoLayer = L.geoJSON(this.props.featureCollection, {
-      pointToLayer: pToLayer
+      pointToLayer: pToLayer,
+      onEachFeature: function (feature,layer){
+        //layer.bindPopup(`${feature.properties.TAX_LA}<br/><button className="btn btn-lnk" onClick="window.whenClicked.bind(${feature})()">Click</button>`)  
+        
+        layer.on({
+          click: (e) => {
+            console.log(e);
+            const mapElement = document.getElementById('mapContainer'); 
+            mapElement.dispatchEvent(new CustomEvent('treeSelected', { detail: e.target.feature, bubbles: true }));
+          }
+            //window.whenClicked.bind(feature,layer)
+      });
+      
+      },
     });  
     this.geoLayer.addTo(this.map);
 
